@@ -11,7 +11,6 @@ MoodFlix is a mood-based movie recommendation platform that helps users quickly 
 - [Key Features](#key-features)
 - [Problem & Solution](#problem--solution)
 - [Target Audience](#target-audience)
-- [Future Plans](#future-plans)
 - [Presentation Info](#presentation-info)
 - [Contributors](#contributors)
 
