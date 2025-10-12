@@ -64,6 +64,6 @@ MoodFlix is built for:
 
 ## 👨‍💻 Contributors
 
-- [Pelinsu Altun](#)  
-- [Safiye Betul Coklu](#)  
-- [Saban Mert Mat](#)
+- [Pelinsu Altun](https://github.com/pelin-a)  
+- [Safiye Betul Coklu](https://github.com/Betulcoklu)  
+- [Saban Mert Mat](https://github.com/Mert-data-Mat)
