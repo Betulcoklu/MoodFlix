@@ -1,9 +1,11 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()  # reads .env
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev_key'
+    
+    # This automatically puts the DB file in your 'instance' folder
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    # Go up one level (..) to root, then into instance/
+    SQLALCHEMY_DATABASE_URI = f'sqlite:///{os.path.join(basedir, "../instance/moodflix.db")}'
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.getenv("SECRET_KEY")
