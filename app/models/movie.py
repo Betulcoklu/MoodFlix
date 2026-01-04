@@ -12,6 +12,62 @@ class Movie(db.Model):
     posterUrl = db.Column(db.String(500), nullable=True)
     imdbRating = db.Column(db.Float, nullable=True)
     createdAt = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
 
     def __repr__(self):
         return f"<Movie {self.id}: {self.title}>"
+
+    # Getter methods
+    def get_id(self) -> int:
+        """Get movie ID."""
+        return self.id
+
+    def get_title(self) -> str:
+        """Get movie title."""
+        return self.title
+
+    def get_year(self) -> int:
+        """Get movie year."""
+        return self.year
+
+    def get_description(self) -> str:
+        """Get movie description."""
+        return self.description
+
+    def get_poster_url(self) -> str:
+        """Get movie poster URL."""
+        return self.posterUrl
+
+    def get_imdb_rating(self) -> float:
+        """Get movie IMDB rating."""
+        return self.imdbRating
+
+    def is_active(self) -> bool:
+        """Check if movie is active."""
+        return self.is_active
+
+    # Setter methods
+    def set_title(self, new_title: str) -> None:
+        """Set movie title."""
+        self.title = new_title
+        db.session.commit()
+
+    def set_year(self, new_year: int) -> None:
+        """Set movie year."""
+        self.year = new_year
+        db.session.commit()
+
+    def set_description(self, new_description: str) -> None:
+        """Set movie description."""
+        self.description = new_description
+        db.session.commit()
+
+    def set_poster_url(self, new_poster_url: str) -> None:
+        """Set movie poster URL."""
+        self.posterUrl = new_poster_url
+        db.session.commit()
+
+    def set_imdb_rating(self, new_rating: float) -> None:
+        """Set movie IMDB rating."""
+        self.imdbRating = new_rating
+        db.session.commit()

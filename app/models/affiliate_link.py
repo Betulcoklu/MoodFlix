@@ -12,3 +12,23 @@ class AffiliateLink(db.Model):
 
     def __repr__(self):
         return f"<AffiliateLink {self.id}: {self.platformName}>"
+
+    # Getter methods
+    def get_platform_name(self) -> str:
+        """Get affiliate link platform name."""
+        return self.platformName
+
+    def get_url(self) -> str:
+        """Get affiliate link URL."""
+        return self.url
+
+    # Setter methods
+    def set_platform_name(self, new_name: str) -> None:
+        """Set affiliate link platform name."""
+        self.platformName = new_name
+        db.session.commit()
+
+    def set_url(self, new_url: str) -> None:
+        """Set affiliate link URL."""
+        self.url = new_url
+        db.session.commit()

@@ -12,3 +12,23 @@ class Rating(db.Model):
 
     def __repr__(self):
         return f"<Rating {self.id}>"
+
+    # Getter methods
+    def get_value(self) -> float:
+        """Get rating value."""
+        return self.value
+
+    def get_created_at(self) -> datetime:
+        """Get rating creation timestamp."""
+        return self.createdAt
+
+    def get_updated_at(self) -> datetime:
+        """Get rating last update timestamp."""
+        return self.updatedAt
+
+    # Setter methods
+    def set_value(self, new_value: float) -> None:
+        """Set rating value."""
+        self.value = new_value
+        self.updatedAt = datetime.utcnow()
+        db.session.commit()
