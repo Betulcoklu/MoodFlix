@@ -1,12 +1,17 @@
 import os
 from flask import Flask
-from app.extensions import db, import_models, migrate
+from app.extensions import db, import_models, migrate, login_manager
 from app.config import Config
 
 # Import your blueprints here
 from app.controllers.home_controller import home_bp
-# import other blueprints as needed
-# from app.controllers.auth_controller import bp as auth_bp
+from app.controllers.auth_controller import auth_bp
+from app.controllers.movie_controller import movie_bp
+from app.controllers.comment_controller import comment_bp
+from app.controllers.favorite_controller import favorite_bp
+from app.controllers.rating_controller import rating_bp
+from app.controllers.suggestion_controller import suggestion_bp
+from app.controllers.admin_controller import admin_bp
 
 def create_app(config_object: str | object = "app.config.Config") -> Flask:
     """Application factory for the Flask app configured for MVC layout."""
@@ -36,11 +41,23 @@ def init_extensions(app: Flask) -> None:
     db.init_app(app)
     import_models()
     migrate.init_app(app, db)
-    # Add more extensions here if needed (e.g., Flask-Login)
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
+
+    from app.models.user import User
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
 
 def register_blueprints(app: Flask) -> None:
     """Register all Flask blueprints."""
     app.register_blueprint(home_bp)
-    # Register other blueprints
-    # app.register_blueprint(auth_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(movie_bp)
+    app.register_blueprint(comment_bp)
+    app.register_blueprint(favorite_bp)
+    app.register_blueprint(rating_bp)
+    app.register_blueprint(suggestion_bp)
+    app.register_blueprint(admin_bp)

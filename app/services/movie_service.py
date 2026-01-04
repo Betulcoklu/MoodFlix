@@ -1,6 +1,8 @@
 import requests
+from sqlalchemy import func
 from app.models.movie import Movie
 from app.models.mood_category import MoodCategory
+from app.models.rating import Rating
 from app import db
 
 MOOD_GENRE_MAP = {
@@ -58,6 +60,11 @@ class MovieService:
         if not movie:
             raise ValueError("Movie not found")
         return movie
+
+    @staticmethod
+    def get_average_rating(movie_id: int) -> float | None:
+        avg = db.session.query(func.avg(Rating.value)).filter(Rating.movie_id == movie_id).scalar()
+        return float(avg) if avg is not None else None
 
     @staticmethod
     def get_movies_for_homepage(limit: int = 10) -> list[Movie]:
