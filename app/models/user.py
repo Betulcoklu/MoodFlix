@@ -14,6 +14,12 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
 
+    # Relationships
+    comments = db.relationship('Comment', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    ratings = db.relationship('Rating', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    favorites = db.relationship('Favorite', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    suggestions = db.relationship('Suggestion', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+
     def __repr__(self):
         return f"<User {self.username}>"
 

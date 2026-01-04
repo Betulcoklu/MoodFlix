@@ -6,6 +6,7 @@ class AffiliateLink(db.Model):
     __tablename__ = "affiliate_links"
 
     id = db.Column(db.Integer, primary_key=True)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
     platformName = db.Column(db.String(255), nullable=False)
     url = db.Column(db.String(500), nullable=False)
     createdAt = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)

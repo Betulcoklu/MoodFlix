@@ -1,6 +1,12 @@
 from datetime import datetime
 from app.extensions import db
 
+# Association table for Movie-MoodCategory many-to-many relationship
+movie_mood_categories = db.Table('movie_mood_categories',
+    db.Column('movie_id', db.Integer, db.ForeignKey('movies.id'), primary_key=True),
+    db.Column('mood_category_id', db.Integer, db.ForeignKey('mood_categories.id'), primary_key=True)
+)
+
 
 class Movie(db.Model):
     __tablename__ = "movies"
@@ -13,6 +19,13 @@ class Movie(db.Model):
     imdbRating = db.Column(db.Float, nullable=True)
     createdAt = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
+
+    # Relationships
+    mood_categories = db.relationship('MoodCategory', secondary=movie_mood_categories, backref=db.backref('movies', lazy='dynamic'))
+    affiliate_links = db.relationship('AffiliateLink', backref='movie', lazy='dynamic', cascade='all, delete-orphan')
+    comments = db.relationship('Comment', backref='movie', lazy='dynamic', cascade='all, delete-orphan')
+    ratings = db.relationship('Rating', backref='movie', lazy='dynamic', cascade='all, delete-orphan')
+    favorites = db.relationship('Favorite', backref='movie', lazy='dynamic', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Movie {self.id}: {self.title}>"
