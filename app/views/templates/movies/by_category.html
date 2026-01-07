@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - MoodFlix{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <div>
+            <h1 class="fw-bold">{{ category.name }}</h1>
+            <p class="text-muted">{{ category.description }}</p>
+        </div>
+        <a href="{{ url_for('movie.list_categories') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back to Categories
+        </a>
+    </div>
+
+    {% if movies %}
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
+            {% for movie in movies %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}">
+                        {% if movie.posterUrl %}
+                            <img src="{{ movie.posterUrl }}" class="card-img-top" alt="{{ movie.title }}" style="height: 300px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                                No Image
+                            </div>
+                        {% endif %}
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-truncate mb-1">
+                            <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}" class="text-decoration-none text-dark">
+                                {{ movie.title }}
+                            </a>
+                        </h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ movie.year }}</small>
+                            <span class="badge bg-warning text-dark"><i class="fas fa-star"></i> {{ movie.imdbRating or '-' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <h3 class="text-muted">No movies found in this category yet.</h3>
+            <p>Go to the <a href="{{ url_for('admin.list_movies') }}">Admin Panel</a> to add some!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

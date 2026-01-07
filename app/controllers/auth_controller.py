@@ -48,7 +48,7 @@ def login():
     if user:
         login_user(user)
         flash("Logged in successfully.", "success")
-        return redirect(url_for("home.home"))
+        return redirect(url_for("home.index"))
     flash("Invalid credentials.", "error")
     return redirect(url_for("auth.login"))
 
@@ -58,7 +58,7 @@ def logout():
     if current_user.is_authenticated:
         logout_user()
     flash("Logged out.", "info")
-    return redirect(url_for("home.home"))
+    return redirect(url_for("home.index"))
 
 
 @auth_bp.get("/profile/<int:user_id>")
@@ -66,7 +66,7 @@ def view_profile(user_id: int):
     user = get_user_profile(user_id)
     if not user:
         flash("User not found.", "error")
-        return redirect(url_for("home.home"))
+        return redirect(url_for("home.index"))
     return render_template("auth/profile.html", user=user)
 
 
@@ -91,7 +91,7 @@ def delete_account_route(user_id: int):
         flash("Account deleted.", "info")
     else:
         flash("Delete failed.", "error")
-    return redirect(url_for("home.home"))
+    return redirect(url_for("home.index"))
 
 
 @auth_bp.route("/password/request", methods=["GET", "POST"])

@@ -12,7 +12,7 @@ movie_bp = Blueprint("movie", __name__, url_prefix="/movies")
 @movie_bp.get("/")
 def list_movies():
     movies = MovieService.get_movies_for_homepage()
-    return render_template("movies/home.html", movies=movies)
+    return render_template("home.html", movies=movies)
 
 
 @movie_bp.get("/category/<int:category_id>")
@@ -66,4 +66,4 @@ def get_movies_for_homepage():
 @movie_bp.get("/categories")
 def list_categories():
     categories = MovieService.listCategories()
-    return render_template("movies/categories.html", categories=categories)
+    return render_template("categories/list.html", categories=categories)

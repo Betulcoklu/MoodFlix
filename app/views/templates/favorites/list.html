@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}My Favorites - MoodFlix{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <div>
+            <h1 class="h2 fw-bold text-danger"><i class="fas fa-heart"></i> My Collection</h1>
+            <p class="text-muted">You have saved {{ movies|length }} movie(s).</p>
+        </div>
+        <a href="{{ url_for('movie.list_movies') }}" class="btn btn-outline-secondary btn-sm">
+            Browse More
+        </a>
+    </div>
+
+    {% if movies %}
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
+            {% for movie in movies %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 position-relative">
+                    
+                    <form action="{{ url_for('favorite.remove_favorite_route', movie_id=movie.id) }}" method="POST" class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                        <button type="submit" class="btn btn-sm btn-light text-danger shadow-sm rounded-circle" title="Remove from Favorites">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
+
+                    <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}">
+                        {% if movie.posterUrl %}
+                            <img src="{{ movie.posterUrl }}" class="card-img-top" alt="{{ movie.title }}" style="height: 300px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                                No Image
+                            </div>
+                        {% endif %}
+                    </a>
+                    
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-truncate mb-1">
+                            <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}" class="text-decoration-none text-dark">
+                                {{ movie.title }}
+                            </a>
+                        </h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ movie.year }}</small>
+                            <span class="badge bg-warning text-dark"><i class="fas fa-star"></i> {{ movie.imdbRating or '-' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="display-1 text-muted mb-3"><i class="far fa-heart"></i></div>
+            <h3 class="text-muted">No favorites yet.</h3>
+            <p class="lead">Start exploring and save the movies you love!</p>
+            <a href="{{ url_for('movie.list_movies') }}" class="btn btn-primary mt-2">Explore Movies</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

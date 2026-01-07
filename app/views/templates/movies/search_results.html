@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - MoodFlix{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-4 border-bottom pb-2">
+        <h1 class="h2 fw-bold">Search Results</h1>
+        <p class="text-muted">
+            Found {{ movies|length }} result(s) for "<span class="text-primary">{{ request.args.get('q', '') }}</span>"
+        </p>
+    </div>
+
+    {% if movies %}
+        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
+            {% for movie in movies %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}">
+                        {% if movie.posterUrl %}
+                            <img src="{{ movie.posterUrl }}" class="card-img-top" alt="{{ movie.title }}" style="height: 300px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                                No Image
+                            </div>
+                        {% endif %}
+                    </a>
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-truncate mb-1">
+                            <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}" class="text-decoration-none text-dark">
+                                {{ movie.title }}
+                            </a>
+                        </h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">{{ movie.year }}</small>
+                            <span class="badge bg-warning text-dark"><i class="fas fa-star"></i> {{ movie.imdbRating or '-' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="display-1 text-muted mb-3"><i class="fas fa-search"></i></div>
+            <h3 class="text-muted">No movies found.</h3>
+            <p class="lead">Try searching for a different title or keyword.</p>
+            <a href="{{ url_for('home.index') }}" class="btn btn-outline-primary mt-2">Back to Home</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

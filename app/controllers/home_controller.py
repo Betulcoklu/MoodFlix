@@ -33,7 +33,7 @@ def list_movies_by_category(category_id: int):
 def search_movies():
     query_text = request.args.get("q", "")
     results = MovieService.search_movies_by_title(query_text) if query_text else []
-    return render_template("search/results.html", query=query_text, movies=results)
+    return render_template("movies/search_results.html", query=query_text, movies=results)
 
 
 @home_bp.get("/movies/<int:movie_id>")

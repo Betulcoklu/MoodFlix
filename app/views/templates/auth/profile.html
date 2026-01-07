@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Profile - MoodFlix{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm mb-4 text-center">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                            {{ user.username[0] | upper }}
+                        </div>
+                    </div>
+                    <h3 class="card-title fw-bold">{{ user.username }}</h3>
+                    <p class="text-muted mb-1">{{ user.email }}</p>
+                    
+                    <small class="text-muted">Member since {{ user.created_at.strftime('%b %Y') }}</small>
+                    
+                    <hr>
+                    
+                    <div class="row text-center">
+                        <div class="col">
+                            <h5 class="fw-bold mb-0">{{ user.favorites.count() }}</h5>
+                            <small class="text-muted">Favorites</small>
+                        </div>
+                        <div class="col">
+                            <h5 class="fw-bold mb-0">{{ user.comments.count() }}</h5>
+                            <small class="text-muted">Reviews</small>
+                        </div>
+                        <div class="col">
+                            <h5 class="fw-bold mb-0">{{ user.ratings.count() }}</h5>
+                            <small class="text-muted">Ratings</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated and current_user.id == user.id %}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    <i class="fas fa-cog"></i> Account Settings
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('auth.update_profile_route', user_id=user.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label small">Update Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label small">New Password (Optional)</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Save Changes</button>
+                    </form>
+
+                    <hr>
+
+                    <button class="btn btn-outline-danger w-100 btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#deleteAccountCollapse">
+                        Delete Account
+                    </button>
+                    <div class="collapse mt-2" id="deleteAccountCollapse">
+                        <div class="alert alert-danger mb-0 p-2">
+                            <small class="d-block mb-2"><strong>Warning:</strong> This cannot be undone.</small>
+                            <form action="{{ url_for('auth.delete_account_route', user_id=user.id) }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                                <button type="submit" class="btn btn-danger btn-sm w-100" onclick="return confirm('Are you strictly sure? All your data will be lost.');">
+                                    Confirm Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-8">
+            <ul class="nav nav-tabs mb-3" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="favorites-tab" data-bs-toggle="tab" data-bs-target="#favorites" type="button">
+                        Favorites
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+                        Recent Reviews
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="profileTabsContent">
+                
+                <div class="tab-pane fade show active" id="favorites" role="tabpanel">
+                    {% if user.favorites.count() > 0 %}
+                        <div class="list-group">
+                            {% for fav in user.favorites %}
+                            <a href="{{ url_for('movie.view_movie_details', movie_id=fav.movie.id) }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                {% if fav.movie.posterUrl %}
+                                    <img src="{{ fav.movie.posterUrl }}" alt="Poster" class="rounded me-3" style="width: 40px; height: 60px; object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded me-3 bg-secondary" style="width: 40px; height: 60px;"></div>
+                                {% endif %}
+                                
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-bold">{{ fav.movie.title }}</h6>
+                                    <small class="text-muted">{{ fav.movie.year }}</small>
+                                </div>
+                                <span class="badge bg-warning text-dark"><i class="fas fa-star"></i> {{ fav.movie.imdbRating }}</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <p>No favorites yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="tab-pane fade" id="reviews" role="tabpanel">
+                    {% if user.comments.count() > 0 %}
+                        {% for comment in user.comments %}
+                        <div class="card mb-3 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    {% if comment.movie %}
+                                        <a href="{{ url_for('movie.view_movie_details', movie_id=comment.movie.id) }}" class="fw-bold text-decoration-none text-dark">
+                                            {{ comment.movie.title }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Unknown Movie</span>
+                                    {% endif %}
+                                    <small class="text-muted">{{ comment.createdAt.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <p class="card-text text-secondary">"{{ comment.text }}"</p>
+                                
+                                {% if comment.movie %}
+                                <a href="{{ url_for('movie.view_movie_details', movie_id=comment.movie.id) }}" class="btn btn-sm btn-outline-primary">View Movie</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <p>No reviews written yet.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

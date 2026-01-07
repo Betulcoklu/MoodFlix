@@ -13,7 +13,7 @@ from app.models.suggestion import Suggestion
 class AdminService:
     @staticmethod
     def adminListMovies() -> list[Movie]:
-        return Movie.query.order_by(Movie.createdAt.desc()).all()
+        return Movie.query.all()
 
     @staticmethod
     def adminAddMovie(movieData: dict) -> Movie:

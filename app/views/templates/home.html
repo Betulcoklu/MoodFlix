@@ -35,7 +35,7 @@
         {% for movie in movies %}
           <a
             class="card"
-            href="{{ url_for('movie.movie_detail', movie_id=movie.id) }}"
+            href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}"
           >
             <div class="poster">
               <img

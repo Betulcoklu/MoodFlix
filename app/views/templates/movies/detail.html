@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - MoodFlix{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <div class="card shadow-sm mb-4">
+        <div class="row g-0">
+            <div class="col-md-4 col-lg-3 text-center bg-dark p-3">
+                {% if movie.posterUrl %}
+                    <img src="{{ movie.posterUrl }}" class="img-fluid rounded shadow" alt="{{ movie.title }}" style="max-height: 400px;">
+                {% else %}
+                    <div class="text-white d-flex align-items-center justify-content-center h-100" style="min-height: 300px;">
+                        <span>No Poster Available</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-8 col-lg-9">
+                <div class="card-body h-100 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h1 class="card-title fw-bold">{{ movie.title }} <span class="text-muted fw-light">({{ movie.year }})</span></h1>
+                            <div class="mb-3">
+                                {% for category in movie.mood_categories %}
+                                    <span class="badge bg-secondary me-1">{{ category.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <h3 class="text-warning mb-0"><i class="fas fa-star"></i> {{ movie.imdbRating or 'N/A' }}</h3>
+                            <small class="text-muted">IMDb</small>
+                        </div>
+                    </div>
+
+                    <p class="card-text flex-grow-1 lead fs-6">{{ movie.description }}</p>
+
+                    <div class="mt-auto border-top pt-3">
+                        <div class="d-flex gap-2 align-items-center">
+                            
+                            {% if current_user.is_authenticated %}
+                                {% if is_favorite %}
+                                    <form action="{{ url_for('favorite.remove_favorite_route', movie_id=movie.id) }}" method="POST">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="fas fa-heart"></i> Remove from Favorites
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <form action="{{ url_for('favorite.add_favorite_route', movie_id=movie.id) }}" method="POST">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="far fa-heart"></i> Add to Favorites
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                                <form action="{{ url_for('rating.rate_movie_route', movie_id=movie.id) }}" method="POST" class="d-flex align-items-center ms-3">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                                    <select name="value" class="form-select form-select-sm w-auto me-2" onchange="this.form.submit()">
+                                        <option value="" disabled {% if not user_rating %}selected{% endif %}>Rate...</option>
+                                        <option value="10" {% if user_rating and user_rating.value == 10 %}selected{% endif %}>10 - Masterpiece</option>
+                                        <option value="8" {% if user_rating and user_rating.value == 8 %}selected{% endif %}>8 - Great</option>
+                                        <option value="6" {% if user_rating and user_rating.value == 6 %}selected{% endif %}>6 - Good</option>
+                                        <option value="4" {% if user_rating and user_rating.value == 4 %}selected{% endif %}>4 - Meh</option>
+                                        <option value="2" {% if user_rating and user_rating.value == 2 %}selected{% endif %}>2 - Bad</option>
+                                    </select>
+                                </form>
+                                
+                                {% if user_rating %}
+                                <form action="{{ url_for('rating.remove_rating_route', movie_id=movie.id) }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                                    <button type="submit" class="btn btn-link text-muted btn-sm text-decoration-none" title="Remove Rating">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                
+                            {% else %}
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login to Favorite & Rate</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h3 class="mb-4"><i class="fas fa-comments"></i> Discussion</h3>
+
+            {% if current_user.is_authenticated %}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <form action="{{ url_for('comment.add_comment_route', movie_id=movie.id) }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                            <div class="mb-2">
+                                <label for="text" class="form-label visually-hidden">Leave a comment</label>
+                                <textarea class="form-control" id="text" name="text" rows="3" placeholder="What did you think of this movie?" required></textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <a href="{{ url_for('auth.login') }}">Log in</a> to join the discussion.
+                </div>
+            {% endif %}
+
+            {% if comments %}
+                {% for comment in comments %}
+                    <div class="card mb-3 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="card-subtitle mb-2 text-muted fw-bold">
+                                    {{ comment.user.username }}
+                                </h6>
+                                <small class="text-muted">{{ comment.createdAt.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                            <p class="card-text">{{ comment.text }}</p>
+
+                            {% if current_user.is_authenticated and (current_user.id == comment.user_id or current_user.role == 'admin') %}
+                                <form action="{{ url_for('comment.delete_own_comment', comment_id=comment.id) }}" method="POST" class="text-end" onsubmit="return confirm('Delete this comment?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                                    <button type="submit" class="btn btn-link text-danger p-0" style="font-size: 0.8rem;">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No comments yet. Be the first!</p>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="p-3 bg-light rounded">
+                <h5>Similar Vibes</h5>
+                <p class="text-muted small">More movies from these categories coming soon...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

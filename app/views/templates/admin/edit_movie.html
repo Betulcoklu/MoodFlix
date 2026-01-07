@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Edit Movie</h3>
+                    <small class="text-muted">ID: {{ movie.id }}</small>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('admin.edit_movie', movie_id=movie.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="title" class="form-label">Movie Title</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ movie.title }}" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="year" class="form-label">Year</label>
+                                <input type="number" class="form-control" id="year" name="year" value="{{ movie.year }}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="posterUrl" class="form-label">Poster Image URL</label>
+                            <input type="url" class="form-control" id="posterUrl" name="posterUrl" value="{{ movie.posterUrl }}">
+                            {% if movie.posterUrl %}
+                                <div class="mt-2">
+                                    <img src="{{ movie.posterUrl }}" alt="Current Poster" style="height: 100px; border-radius: 4px;">
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Plot Summary</label>
+                            <textarea class="form-control" id="description" name="description" rows="4">{{ movie.description }}</textarea>
+                        </div>
+
+                        <div class="row align-items-center mb-3">
+                            <div class="col-md-6">
+                                <label for="imdbRating" class="form-label">IMDb Rating</label>
+                                <input type="number" step="0.1" class="form-control" id="imdbRating" name="imdbRating" value="{{ movie.imdbRating }}">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="true" {% if movie.is_active %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_active">
+                                        Is Active?
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="categories" class="form-label fw-bold">Mood Categories</label>
+                            <select class="form-select" id="categories" name="mood_category_ids" multiple size="5">
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" 
+                                        {% if category in movie.categories %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Hold Ctrl/Cmd to adjust selections.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin.list_movies') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Update Movie</button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    <h5>Affiliate Links</h5>
+                    <form action="{{ url_for('admin.add_affiliate_link', movie_id=movie.id) }}" method="POST" class="row g-2 align-items-center">
+                         <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+                        <div class="col-auto">
+                            <input type="text" class="form-control" name="platformName" placeholder="Platform (e.g. Netflix)">
+                        </div>
+                        <div class="col-auto">
+                            <input type="url" class="form-control" name="url" placeholder="https://...">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Add Link</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
