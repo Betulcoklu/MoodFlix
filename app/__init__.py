@@ -15,10 +15,12 @@ from app.controllers.admin_controller import admin_bp
 
 def create_app(config_object: str | object = "app.config.Config") -> Flask:
     """Application factory for the Flask app configured for MVC layout."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
     app = Flask(
         __name__,
-        template_folder=os.path.join("app", "views", "templates"),
-        static_folder=os.path.join("app", "views", "static"),
+        template_folder=os.path.join(base_dir, "views", "templates"),
+        static_folder=os.path.join(base_dir, "views", "static"),
     )
 
     # Load config

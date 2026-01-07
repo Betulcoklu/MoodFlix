@@ -3,8 +3,67 @@
 {% block title %}Home | MoodFlix{% endblock %}
 
 {% block content %}
-<section class="hero">
-  <h1>{{ title }}</h1>
-  <p>{{ message }}</p>
-</section>
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Find the right movie for your mood 🎬</h1>
+    <p>
+      Browse by category, search titles, add favorites,
+      rate movies and leave comments.
+    </p>
+
+    <div class="hero-actions">
+      <a href="{{ url_for('movie.list_categories') }}" class="btn">
+        Browse Categories
+      </a>
+      <a href="{{ url_for('movie.list_movies') }}" class="btn ghost">
+        All Movies
+      </a>
+    </div>
+  </section>
+
+  <!-- MOVIES -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Homepage Picks</h2>
+      <span class="muted">
+        {{ movies|length if movies else 0 }} movies
+      </span>
+    </div>
+
+    {% if movies %}
+      <div class="grid">
+        {% for movie in movies %}
+          <a
+            class="card"
+            href="{{ url_for('movie.movie_detail', movie_id=movie.id) }}"
+          >
+            <div class="poster">
+              <img
+                src="{{ movie.posterUrl or '' }}"
+                alt="{{ movie.title }}"
+                onerror="this.style.display='none'"
+              />
+            </div>
+
+            <div class="card-body">
+              <div class="card-top">
+                <h3 class="title">{{ movie.title }}</h3>
+                <span class="badge">
+                  {{ movie.imdbRating if movie.imdbRating else '-' }}
+                </span>
+              </div>
+
+              <div class="meta">
+                {{ movie.year if movie.year else '—' }}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <p>No movies to display yet.</p>
+      </div>
+    {% endif %}
+  </section>
 {% endblock %}

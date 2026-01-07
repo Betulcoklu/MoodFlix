@@ -1,21 +1,94 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}MoodFlix{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="brand">MoodFlix</div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}MoodFlix{% endblock %}</title>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- Main JS (later) -->
+  <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="{{ url_for('home.index') }}" class="brand">MoodFlix</a>
+
       <nav class="nav-links">
-        <a href="/">Home</a>
+        <a href="{{ url_for('home.index') }}">Home</a>
+        <a href="{{ url_for('movie.list_movies') }}">Movies</a>
+        <a href="{{ url_for('movie.list_categories') }}">Categories</a>
       </nav>
-    </header>
-    <main class="page">
-      {% block content %}{% endblock %}
-    </main>
-    <footer class="site-footer">Built with Flask MVC structure.</footer>
-  </body>
+
+      <!-- SEARCH -->
+      <form
+        class="nav-search"
+        method="GET"
+        action="{{ url_for('home.search_movies') }}"
+      >
+        <input
+          type="text"
+          name="q"
+          placeholder="Search movies..."
+          value="{{ request.args.get('q', '') }}"
+        />
+        <button type="submit">Search</button>
+      </form>
+
+      <!-- AUTH -->
+      <div class="nav-auth">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('auth.profile', user_id=current_user.id) }}">
+            {{ current_user.username }}
+          </a>
+
+          <form
+            action="{{ url_for('auth.logout') }}"
+            method="POST"
+            class="inline"
+          >
+            <button type="submit" class="link-btn">Logout</button>
+          </form>
+
+          <a href="{{ url_for('favorite.list_favorites') }}">Favorites</a>
+          <a href="{{ url_for('suggestion.list_suggestions') }}">Suggestions</a>
+
+          {% if current_user.role == 'admin' %}
+            <a href="{{ url_for('admin.admin_home') }}">Admin</a>
+          {% endif %}
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Login</a>
+          <a href="{{ url_for('auth.register') }}" class="primary">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="container page">
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <small>© 2026 MoodFlix • Built with Flask</small>
+    </div>
+  </footer>
+</body>
 </html>

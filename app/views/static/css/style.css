@@ -1,0 +1,188 @@
+:root {
+  --bg: #0b0b0f;
+  --panel: #12121a;
+  --text: #f3f3f7;
+  --muted: #a7a7b6;
+  --line: #232333;
+  --accent: #ffcc00;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  background: rgba(11, 11, 15, 0.9);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.brand {
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.nav-links a,
+.nav-auth a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+.nav-links a:hover,
+.nav-auth a:hover {
+  color: var(--text);
+}
+
+.nav-search {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.nav-search input {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+}
+
+.nav-search button {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.page {
+  padding: 24px 0;
+}
+
+.hero {
+  padding: 28px;
+  border-radius: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 204, 0, 0.1),
+    var(--panel)
+  );
+}
+
+.hero h1 {
+  margin: 0 0 10px;
+}
+
+.hero p {
+  color: var(--muted);
+}
+
+.hero-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #111;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.section {
+  margin-top: 24px;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.poster {
+  height: 220px;
+  background: #000;
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-body {
+  padding: 12px;
+}
+
+.badge {
+  font-size: 12px;
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 18px 0;
+  margin-top: 40px;
+  color: var(--muted);
+}
+
+.inline {
+  display: inline;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
