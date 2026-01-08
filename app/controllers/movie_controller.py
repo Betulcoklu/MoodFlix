@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import current_user
 
+# Ensure these imports are correct
 from app.services.movie_service import MovieService
 from app.services.rating_service import get_user_rating_for_movie
 from app.services.comment_service import list_comments_for_movie
@@ -8,12 +9,13 @@ from app.services.favorite_service import is_favorite
 
 movie_bp = Blueprint("movie", __name__, url_prefix="/movies")
 
-
+# --- FIX 1: This route now gets ALL movies, not just homepage ones ---
 @movie_bp.get("/")
 def list_movies():
-    movies = MovieService.get_movies_for_homepage()
-    return render_template("home.html", movies=movies)
-
+    # We need to make sure this method exists in your Service!
+    movies = MovieService.get_all_movies() 
+    # We render a dedicated list page, NOT the landing page (home.html)
+    return render_template("movies/list.html", movies=movies) 
 
 @movie_bp.get("/category/<int:category_id>")
 def list_movies_by_category(category_id: int):
@@ -22,13 +24,11 @@ def list_movies_by_category(category_id: int):
     category = MovieService.getCategory(category_id)
     return render_template("movies/by_category.html", category=category, movies=movies, sort_by=sort_by)
 
-
 @movie_bp.get("/search")
 def search_movies():
     query_text = request.args.get("q", "")
     results = MovieService.search_movies_by_title(query_text) if query_text else []
     return render_template("movies/search_results.html", query=query_text, movies=results)
-
 
 @movie_bp.get("/<int:movie_id>")
 def view_movie_details(movie_id: int):
@@ -55,13 +55,6 @@ def view_movie_details(movie_id: int):
         is_favorite=favorite_flag,
         average_rating=average_rating,
     )
-
-
-@movie_bp.get("/")
-def get_movies_for_homepage():
-    movies = MovieService.get_movies_for_homepage()
-    return render_template("movies/home.html", movies=movies)
-
 
 @movie_bp.get("/categories")
 def list_categories():

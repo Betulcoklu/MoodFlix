@@ -6,7 +6,6 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 
-
 def import_models() -> None:
 	"""Import all models so SQLAlchemy is aware of them."""
 

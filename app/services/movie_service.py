@@ -22,7 +22,12 @@ MOOD_GENRE_MAP = {
 class MovieService:
     BASE_URL = "https://api.imdbapi.dev"
 
-
+    @staticmethod
+    def get_all_movies():
+        # This queries ALL 42 movies without a limit
+        from app.models.movie import Movie
+        return Movie.query.all()
+    
     @staticmethod
     def listCategories() -> list[MoodCategory]:
         return MoodCategory.query.order_by(MoodCategory.name.asc()).all()

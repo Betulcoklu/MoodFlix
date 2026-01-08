@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}All Movies - MoodFlix{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold">All Movies</h1>
+        <span class="badge bg-primary rounded-pill">{{ movies|length }} Titles</span>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for movie in movies %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0 movie-card">
+                
+                {# CORRECTED: Using 'movie.id' #}
+                <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}" class="text-decoration-none">
+                    
+                    {# CORRECTED: Changed 'movie.image' to 'movie.posterUrl' #}
+                    {% if movie.posterUrl %}
+                        <img src="{{ movie.posterUrl }}" 
+                             class="card-img-top" 
+                             alt="{{ movie.title }}" 
+                             style="height: 320px; object-fit: cover;"
+                             onerror="this.onerror=null;this.src='{{ url_for('static', filename='img/hero-bg.jpg') }}';">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='img/hero-bg.jpg') }}" 
+                             class="card-img-top" 
+                             style="height: 320px; object-fit: cover; opacity: 0.5;">
+                    {% endif %}
+                </a>
+
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-dark text-truncate">{{ movie.title }}</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        
+                        {# CORRECTED: Changed 'movie.release_year' to 'movie.year' #}
+                        <small class="text-muted">{{ movie.year }}</small>
+                        
+                        <span class="text-warning">
+                            {# CORRECTED: Changed 'movie.rating' to 'movie.imdbRating' #}
+                            <i class="fas fa-star"></i> {{ movie.imdbRating if movie.imdbRating else 'N/A' }}
+                        </span>
+                    </div>
+                    
+                    <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}" 
+                       class="btn btn-outline-primary btn-sm w-100 mt-3">
+                       View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <h3>No movies found in the database.</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .movie-card {
+        transition: transform 0.2s;
+    }
+    .movie-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

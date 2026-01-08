@@ -15,7 +15,7 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" style = "z-index: 1050;">
     <div class="container">
       <a href="{{ url_for('home.index') }}" class="navbar-brand fw-bold">MoodFlix</a>
       
@@ -26,13 +26,13 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('home.index') }}">Home</a>
+                <a class="nav-link" href="{{ url_for('home.index') }}"> Home </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('movie.list_movies') }}">Movies</a>
+                <a class="nav-link" href="{{ url_for('movie.list_movies') }}"> Movies </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('movie.list_categories') }}">Categories</a>
+                <a class="nav-link" href="{{ url_for('movie.list_categories') }}"> Categories </a>
             </li>
         </ul>
 

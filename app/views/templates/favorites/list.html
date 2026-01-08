@@ -62,3 +62,84 @@
     {% endif %}
 </div>
 {% endblock %}
+
+{% extends "base.html" %}
+
+{% block title %}All Moods - MoodFlix{% endblock %}
+
+{% block content %}
+  <div class="text-center mb-5">
+    <h1 class="fw-bold display-5">Browse by Mood</h1>
+    <p class="text-muted lead">How are you feeling today?</p>
+  </div>
+
+  <div class="mood-grid">
+    {% for category in categories %}
+      {# We'll pick an image based on keywords in name/description #}
+      {% set text = ((category.name or '') ~ ' ' ~ (category.description or '')) | lower %}
+      {% set bg_file = none %}
+      {% set bg_pos = 'center 35%' %}
+
+      {# Adventure #}
+      {% if 'adventure' in text %}
+        {% set bg_file = 'Adventure.jpg' %}
+
+      {# Fantasy / Another World #}
+      {% elif 'fantasy' in text or 'another world' in text %}
+        {% set bg_file = 'Fantasy.jpg' %}
+
+      {# Romance / Date Night #}
+      {% elif 'romance' in text or 'date night' in text %}
+        {% set bg_file = 'Romence.jpg' %}
+        {% set bg_pos = 'center 30%' %}
+
+      {# Action / Hyped #}
+      {% elif 'action' in text or 'hyped' in text %}
+        {% set bg_file = 'Action.jpg' %}
+        {% set bg_pos = 'center 40%' %}
+
+      {# Thriller / Hits Hard #}
+      {% elif 'thriller' in text or 'hits hard' in text %}
+        {% set bg_file = 'Thriller.jpg' %}
+        {% set bg_pos = 'center 50%' %}
+
+      {# Drama / Cry #}
+      {% elif 'drama' in text or 'cry' in text %}
+        {% set bg_file = 'Drama.jpg' %}
+
+      {# Sci-Fi / Mind-Bending #}
+      {% elif 'sci-fi' in text or 'sci fi' in text or 'mind' in text %}
+        {% set bg_file = 'Sci-Fi.jpg' %}
+        {% set bg_pos = 'center 38%' %}
+
+      {# Weekend #}
+      {% elif 'weekend' in text %}
+        {% set bg_file = 'Weekends.jpg' %}
+
+      {# Pure Fun #}
+      {% elif 'pure fun' in text or (' fun' in text) %}
+        {% set bg_file = 'Fun..jpg' %}
+
+      {# Comedy / Friends #}
+      {% elif 'comedy' in text or 'friends' in text %}
+        {% set bg_file = 'Comedy.jpg' %}
+        {% set bg_pos = 'center 30%' %}
+      {% endif %}
+
+      <a
+        class="mood-card"
+        href="{{ url_for('movie.list_movies_by_category', category_id=category.id) }}"
+        {% if bg_file %}
+          style="--card-bg: url('{{ url_for('static', filename='img/' ~ bg_file) }}'); --bg-pos: {{ bg_pos }};"
+        {% endif %}
+      >
+        <h3>{{ category.name }}</h3>
+        <p>{{ category.description }}</p>
+
+        <div class="mood-actions">
+          <span class="btn">Explore Movies</span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}

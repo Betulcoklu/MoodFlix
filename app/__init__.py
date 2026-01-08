@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, request, session  # <--- Added request and session
 from app.extensions import db, import_models, migrate, login_manager
 from app.config import Config
 
