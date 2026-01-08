@@ -1,145 +1,76 @@
 {% extends "base.html" %}
 
-{% block title %}My Favorites - MoodFlix{% endblock %}
+{% block title %}My Favorites | MoodFlix{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <div>
-            <h1 class="h2 fw-bold text-danger"><i class="fas fa-heart"></i> My Collection</h1>
-            <p class="text-muted">You have saved {{ movies|length }} movie(s).</p>
-        </div>
-        <a href="{{ url_for('movie.list_movies') }}" class="btn btn-outline-secondary btn-sm">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-heart text-danger"></i> My Favorite Movies</h2>
+        <a href="{{ url_for('movie.list_movies') }}" class="btn btn-outline-primary">
             Browse More
         </a>
     </div>
 
     {% if movies %}
-        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
-            {% for movie in movies %}
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 position-relative">
-                    
-                    <form action="{{ url_for('favorite.remove_favorite_route', movie_id=movie.id) }}" method="POST" class="position-absolute top-0 end-0 m-2" style="z-index: 10;">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
-                        <button type="submit" class="btn btn-sm btn-light text-danger shadow-sm rounded-circle" title="Remove from Favorites">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </form>
+        <div class="grid">
+            {% for favorite in movies %}
+                {# NOTE: Depending on your Service, 'favorite' might be the Movie object itself 
+                   OR a Favorite object containing the movie. 
+                   The code below handles the "Favorite object" case. #}
+                   
+                {% set movie = favorite.movie if favorite.movie is defined else favorite %}
 
-                    <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}">
-                        {% if movie.posterUrl %}
-                            <img src="{{ movie.posterUrl }}" class="card-img-top" alt="{{ movie.title }}" style="height: 300px; object-fit: cover;">
-                        {% else %}
-                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
-                                No Image
-                            </div>
-                        {% endif %}
-                    </a>
-                    
-                    <div class="card-body p-2">
-                        <h6 class="card-title text-truncate mb-1">
-                            <a href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}" class="text-decoration-none text-dark">
-                                {{ movie.title }}
-                            </a>
-                        </h6>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">{{ movie.year }}</small>
-                            <span class="badge bg-warning text-dark"><i class="fas fa-star"></i> {{ movie.imdbRating or '-' }}</span>
+                <a class="card" href="{{ url_for('home.view_movie_details', movie_id=movie.id) }}">
+                    <div class="poster">
+                        <img src="{{ movie.posterUrl or '' }}" 
+                             alt="{{ movie.title }}" 
+                             onerror="this.style.display='none'" />
+                        
+                        <div class="poster-overlay">
+                            <form action="{{ url_for('favorite.remove_favorite_route', movie_id=movie.id) }}" method="POST" class="w-100">
+                                <button type="submit" class="btn btn-danger btn-sm w-100 rounded-0" title="Remove from Favorites">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </button>
+                            </form>
                         </div>
                     </div>
-                </div>
-            </div>
+
+                    <div class="card-body">
+                        <div class="card-top">
+                            <h3 class="title">{{ movie.title }}</h3>
+                            <span class="badge text-bg-warning">
+                                {{ movie.imdbRating or '-' }}
+                            </span>
+                        </div>
+                        <div class="meta">
+                            {{ movie.year or '—' }}
+                        </div>
+                    </div>
+                </a>
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-center py-5">
-            <div class="display-1 text-muted mb-3"><i class="far fa-heart"></i></div>
-            <h3 class="text-muted">No favorites yet.</h3>
-            <p class="lead">Start exploring and save the movies you love!</p>
+        <div class="text-center py-5 bg-light rounded shadow-sm">
+            <i class="far fa-heart fa-3x text-muted mb-3"></i>
+            <h3>No favorites yet</h3>
+            <p class="text-muted">Start building your watchlist by adding movies you love!</p>
             <a href="{{ url_for('movie.list_movies') }}" class="btn btn-primary mt-2">Explore Movies</a>
         </div>
     {% endif %}
 </div>
-{% endblock %}
 
-{% extends "base.html" %}
-
-{% block title %}All Moods - MoodFlix{% endblock %}
-
-{% block content %}
-  <div class="text-center mb-5">
-    <h1 class="fw-bold display-5">Browse by Mood</h1>
-    <p class="text-muted lead">How are you feeling today?</p>
-  </div>
-
-  <div class="mood-grid">
-    {% for category in categories %}
-      {# We'll pick an image based on keywords in name/description #}
-      {% set text = ((category.name or '') ~ ' ' ~ (category.description or '')) | lower %}
-      {% set bg_file = none %}
-      {% set bg_pos = 'center 35%' %}
-
-      {# Adventure #}
-      {% if 'adventure' in text %}
-        {% set bg_file = 'Adventure.jpg' %}
-
-      {# Fantasy / Another World #}
-      {% elif 'fantasy' in text or 'another world' in text %}
-        {% set bg_file = 'Fantasy.jpg' %}
-
-      {# Romance / Date Night #}
-      {% elif 'romance' in text or 'date night' in text %}
-        {% set bg_file = 'Romence.jpg' %}
-        {% set bg_pos = 'center 30%' %}
-
-      {# Action / Hyped #}
-      {% elif 'action' in text or 'hyped' in text %}
-        {% set bg_file = 'Action.jpg' %}
-        {% set bg_pos = 'center 40%' %}
-
-      {# Thriller / Hits Hard #}
-      {% elif 'thriller' in text or 'hits hard' in text %}
-        {% set bg_file = 'Thriller.jpg' %}
-        {% set bg_pos = 'center 50%' %}
-
-      {# Drama / Cry #}
-      {% elif 'drama' in text or 'cry' in text %}
-        {% set bg_file = 'Drama.jpg' %}
-
-      {# Sci-Fi / Mind-Bending #}
-      {% elif 'sci-fi' in text or 'sci fi' in text or 'mind' in text %}
-        {% set bg_file = 'Sci-Fi.jpg' %}
-        {% set bg_pos = 'center 38%' %}
-
-      {# Weekend #}
-      {% elif 'weekend' in text %}
-        {% set bg_file = 'Weekends.jpg' %}
-
-      {# Pure Fun #}
-      {% elif 'pure fun' in text or (' fun' in text) %}
-        {% set bg_file = 'Fun..jpg' %}
-
-      {# Comedy / Friends #}
-      {% elif 'comedy' in text or 'friends' in text %}
-        {% set bg_file = 'Comedy.jpg' %}
-        {% set bg_pos = 'center 30%' %}
-      {% endif %}
-
-      <a
-        class="mood-card"
-        href="{{ url_for('movie.list_movies_by_category', category_id=category.id) }}"
-        {% if bg_file %}
-          style="--card-bg: url('{{ url_for('static', filename='img/' ~ bg_file) }}'); --bg-pos: {{ bg_pos }};"
-        {% endif %}
-      >
-        <h3>{{ category.name }}</h3>
-        <p>{{ category.description }}</p>
-
-        <div class="mood-actions">
-          <span class="btn">Explore Movies</span>
-        </div>
-      </a>
-    {% endfor %}
-  </div>
+<style>
+    /* Little extra CSS to make the remove button appear on hover */
+    .poster-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .card:hover .poster-overlay {
+        opacity: 1;
+    }
+</style>
 {% endblock %}

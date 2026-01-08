@@ -11,8 +11,15 @@ home_bp = Blueprint("home", __name__, url_prefix="/")
 
 @home_bp.route("/")
 def index():
-    movies = MovieService.get_movies_for_homepage()
-    return render_template("home.html", movies=movies)
+    # Created two sections for the home page, 4 for each -Mert
+    latest_movies = MovieService.get_latest_movies(limit=4)
+    top_rated_movies = MovieService.get_top_rated_movies(limit=4)
+    
+    return render_template(
+        "home.html", 
+        latest_movies=latest_movies, 
+        top_rated_movies=top_rated_movies
+    )
 
 
 @home_bp.get("/categories")

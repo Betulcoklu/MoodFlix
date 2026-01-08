@@ -115,7 +115,7 @@
 
             {% if comments %}
                 {% for comment in comments %}
-                    <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card mb-3 border-0 shadow-sm" id="comment{{ comment.id}}">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <h6 class="card-subtitle mb-2 text-muted fw-bold">
@@ -126,7 +126,7 @@
                             <p class="card-text">{{ comment.text }}</p>
 
                             {% if current_user.is_authenticated and (current_user.id == comment.user_id or current_user.role == 'admin') %}
-                                <form action="{{ url_for('comment.delete_own_comment', comment_id=comment.id) }}" method="POST" class="text-end" onsubmit="return confirm('Delete this comment?');">
+                                <form action="{{ url_for('admin.delete_comment', comment_id=comment.id) }}" method="POST" class="text-end" onsubmit="return confirm('Delete this comment?');">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
                                     <button type="submit" class="btn btn-link text-danger p-0" style="font-size: 0.8rem;">Delete</button>
                                 </form>

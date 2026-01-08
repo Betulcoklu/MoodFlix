@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | MoodFlix{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold"><i class="fas fa-user-shield text-warning"></i> Admin Dashboard</h1>
+            <p class="text-muted">Manage your movies, categories, and user suggestions.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-film fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Movies</h5>
+                    <p class="card-text text-muted small">Add, edit, or delete movies.</p>
+                    <a href="{{ url_for('admin.list_movies') }}" class="btn btn-outline-primary stretched-link">Manage Movies</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-tags fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Categories</h5>
+                    <p class="card-text text-muted small">Manage mood categories.</p>
+                    <a href="{{ url_for('admin.list_categories') }}" class="btn btn-outline-success stretched-link">Manage Categories</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-lightbulb fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Suggestions</h5>
+                    <p class="card-text text-muted small">Approve user suggestions.</p>
+                    <a href="{{ url_for('admin.list_pending_suggestions') }}" class="btn btn-outline-warning stretched-link">View Requests</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-comments fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Comments</h5>
+                    <p class="card-text text-muted small">Moderate user discussions.</p>
+                    <a href="{{ url_for('admin.list_comments') }}" class="btn btn-outline-info stretched-link">Manage Comments</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

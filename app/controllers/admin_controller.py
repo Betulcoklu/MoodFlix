@@ -21,7 +21,7 @@ def admin_index():
     guard = _require_admin()
     if guard:
         return guard
-    return {"message": "Admin controller placeholder"}
+    return render_template("admin/index.html")
 
 
 @admin_bp.get("/movies")
@@ -48,7 +48,7 @@ def add_movie():
         "description": request.form.get("description"),
         "posterUrl": request.form.get("posterUrl"),
         "imdbRating": request.form.get("imdbRating"),
-        "is_active": request.form.get("is_active", "true").lower() == "true",
+        "is_active": request.form.get("is_active", "true"),
         "mood_category_ids": request.form.getlist("mood_category_ids"),
     }
 
@@ -173,6 +173,46 @@ def list_pending_suggestions():
     suggestions = AdminService.adminListPendingSuggestions()
     return render_template("admin/suggestions.html", suggestions=suggestions)
 
+@admin_bp.route("/suggestions/<int:suggestion_id>/edit", methods=["GET", "POST"])
+def edit_suggestion(suggestion_id: int):
+    guard = _require_admin()
+    if guard: return guard
+
+    suggestion = AdminService.adminGetSuggestion(suggestion_id)
+    if not suggestion:
+        return redirect(url_for("admin.list_pending_suggestions"))
+
+    if request.method == "GET":
+        categories = AdminService.adminListCategories()
+        return render_template("admin/edit_suggestion.html", suggestion=suggestion, categories=categories)
+
+    # Gather form data
+    data = {
+        "title": request.form.get("title"),
+        "year": request.form.get("year"),
+        "mood_category_id": request.form.get("mood_category_id"),
+        "description": request.form.get("description"),
+        "posterUrl": request.form.get("posterUrl"),
+        "imdbRating": request.form.get("imdbRating"),
+    }
+
+    # Check which button was clicked (Save or Approve)
+    action = request.form.get("action")
+
+    if action == "save":
+        AdminService.adminUpdateSuggestion(suggestion_id, data)
+        flash("Suggestion updated.", "info")
+        return redirect(url_for("admin.list_pending_suggestions"))
+    
+    elif action == "approve":
+        # First save any changes made in the form
+        AdminService.adminUpdateSuggestion(suggestion_id, data)
+        # Then approve and create movie
+        AdminService.adminApproveSuggestion(suggestion_id)
+        flash("Suggestion approved and movie created!", "success")
+        return redirect(url_for("admin.list_pending_suggestions"))
+        
+    return redirect(url_for("admin.list_pending_suggestions"))
 
 @admin_bp.post("/suggestions/<int:suggestion_id>/approve")
 def approve_suggestion(suggestion_id: int):
@@ -210,6 +250,12 @@ def remove_affiliate_link(link_id: int):
     guard = _require_admin()
     if guard:
         return guard
-    # No movie_id needed for delete; redirect back to movies list
+        
     AdminService.adminRemoveAffiliateLink(link_id)
+    
+    # Get movie_id from the form to redirect back to the edit page
+    movie_id = request.form.get("movie_id")
+    if movie_id:
+        return redirect(url_for("admin.edit_movie", movie_id=movie_id))
+        
     return redirect(url_for("admin.list_movies"))

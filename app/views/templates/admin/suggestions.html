@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Suggestions | Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tasks"></i> Pending Suggestions</h2>
+        <a href="{{ url_for('admin.admin_index') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+
+    {% if suggestions %}
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Movie Title</th>
+                            <th>Year</th>
+                            <th>Category</th>
+                            <th>Suggested By</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in suggestions %}
+                        <tr>
+                            <td class="fw-bold">{{ s.title }}</td>
+                            <td>{{ s.year or '-' }}</td>
+                            <td>
+                                {% if s.mood_category %}
+                                    <span class="badge bg-secondary">{{ s.mood_category.name }}</span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">User #{{ s.user_id }}</small>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    
+                                    <a href="{{ url_for('admin.edit_suggestion', suggestion_id=s.id) }}" class="btn btn-primary btn-sm" title="Review & Approve">
+                                        <i class="fas fa-edit"></i> Review
+                                    </a>
+
+                                    <form action="{{ url_for('admin.reject_suggestion', suggestion_id=s.id) }}" method="POST">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Reject">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="fas fa-clipboard-check fa-2x mb-3 d-block"></i>
+            All caught up! There are no pending suggestions.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -3,7 +3,6 @@
 {% block title %}Home | MoodFlix{% endblock %}
 
 {% block content %}
-  <!-- HERO -->
   <section class="hero">
     <h1>Find the right movie for your mood 🎬</h1>
     <p>
@@ -21,22 +20,15 @@
     </div>
   </section>
 
-  <!-- MOVIES -->
   <section class="section">
     <div class="section-head">
-      <h2>Homepage Picks</h2>
-      <span class="muted">
-        {{ movies|length if movies else 0 }} movies
-      </span>
+      <h2>🔥 New Releases</h2>
     </div>
 
-    {% if movies %}
+    {% if latest_movies %}
       <div class="grid">
-        {% for movie in movies %}
-          <a
-            class="card"
-            href="{{ url_for('movie.view_movie_details', movie_id=movie.id) }}"
-          >
+        {% for movie in latest_movies %}
+          <a class="card" href="{{ url_for('home.view_movie_details', movie_id=movie.id) }}">
             <div class="poster">
               <img
                 src="{{ movie.posterUrl or '' }}"
@@ -52,7 +44,6 @@
                   {{ movie.imdbRating if movie.imdbRating else '-' }}
                 </span>
               </div>
-
               <div class="meta">
                 {{ movie.year if movie.year else '—' }}
               </div>
@@ -62,8 +53,47 @@
       </div>
     {% else %}
       <div class="empty">
-        <p>No movies to display yet.</p>
+        <p>No new releases found.</p>
       </div>
     {% endif %}
   </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>⭐ Top Rated Picks</h2>
+    </div>
+
+    {% if top_rated_movies %}
+      <div class="grid">
+        {% for movie in top_rated_movies %}
+          <a class="card" href="{{ url_for('home.view_movie_details', movie_id=movie.id) }}">
+            <div class="poster">
+              <img
+                src="{{ movie.posterUrl or '' }}"
+                alt="{{ movie.title }}"
+                onerror="this.style.display='none'"
+              />
+            </div>
+
+            <div class="card-body">
+              <div class="card-top">
+                <h3 class="title">{{ movie.title }}</h3>
+                <span class="badge" style="background-color: #ffc107; color: #000;">
+                  {{ movie.imdbRating if movie.imdbRating else '-' }}
+                </span>
+              </div>
+              <div class="meta">
+                {{ movie.year if movie.year else '—' }}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <p>No top rated movies found.</p>
+      </div>
+    {% endif %}
+  </section>
+
 {% endblock %}

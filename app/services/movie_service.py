@@ -4,6 +4,8 @@ from app.models.movie import Movie
 from app.models.mood_category import MoodCategory
 from app.models.rating import Rating
 from app import db
+from sqlalchemy import desc
+
 
 MOOD_GENRE_MAP = {
     "Make Me Cry": "Drama",
@@ -22,6 +24,17 @@ MOOD_GENRE_MAP = {
 class MovieService:
     BASE_URL = "https://api.imdbapi.dev"
 
+    
+    @staticmethod
+    def get_latest_movies(limit=5):
+        # Sorts by Year descending, then ID descending (as a proxy for 'added recently')
+        return Movie.query.filter_by(is_active=True).order_by(desc(Movie.year), desc(Movie.id)).limit(limit).all()
+
+    @staticmethod
+    def get_top_rated_movies(limit=5):
+        # Sorts by IMDb rating descending
+        return Movie.query.filter_by(is_active=True).order_by(desc(Movie.imdbRating)).limit(limit).all()
+    
     @staticmethod
     def get_all_movies():
         # This queries ALL 42 movies without a limit

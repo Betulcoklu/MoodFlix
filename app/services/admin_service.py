@@ -167,17 +167,60 @@ class AdminService:
             raise ValueError("Suggestion not found")
         return suggestion
 
+
     @staticmethod
-    def adminApproveSuggestion(suggestionId: int) -> Suggestion:
-        suggestion = Suggestion.query.get(suggestionId)
-        if not suggestion:
-            raise ValueError("Suggestion not found")
+    def adminGetSuggestion(suggestion_id: int):
+        from app.models.suggestion import Suggestion
+        return Suggestion.query.get(suggestion_id)
 
-        suggestion.status = "approved"
-        suggestion.reviewedAt = datetime.utcnow()
+    @staticmethod
+    def adminUpdateSuggestion(suggestion_id: int, data: dict):
+        from app.models.suggestion import Suggestion
+        from app import db
+        
+        s = Suggestion.query.get(suggestion_id)
+        if s:
+            s.title = data['title']
+            s.year = int(data['year']) if data['year'] else None
+            s.mood_category_id = int(data['mood_category_id'])
+            s.description = data['description']
+            s.posterUrl = data['posterUrl']
+            s.imdbRating = float(data['imdbRating']) if data['imdbRating'] else None
+            db.session.commit()
+
+    @staticmethod
+    def adminApproveSuggestion(suggestion_id: int):
+        from app.models.suggestion import Suggestion
+        from app.models.movie import Movie
+        from app.models.mood_category import MoodCategory
+        from app import db
+
+        # 1. Get the suggestion
+        s = Suggestion.query.get(suggestion_id)
+        if not s or s.status != 'pending':
+            return
+
+        # 2. Create the new Movie
+        new_movie = Movie(
+            title=s.title,
+            year=s.year,
+            description=s.description,
+            posterUrl=s.posterUrl,
+            imdbRating=s.imdbRating,
+            is_active=True
+        )
+
+        # 3. Link the Category
+        category = MoodCategory.query.get(s.mood_category_id)
+        if category:
+            new_movie.mood_categories.append(category)
+
+        # 4. Update Suggestion Status
+        s.status = 'approved'
+
+        # 5. Save everything
+        db.session.add(new_movie)
         db.session.commit()
-        return suggestion
-
     @staticmethod
     def adminRejectSuggestion(suggestionId: int) -> Suggestion:
         suggestion = Suggestion.query.get(suggestionId)

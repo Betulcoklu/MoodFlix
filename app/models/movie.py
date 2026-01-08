@@ -55,9 +55,6 @@ class Movie(db.Model):
         """Get movie IMDB rating."""
         return self.imdbRating
 
-    def is_active(self) -> bool:
-        """Check if movie is active."""
-        return self.is_active
 
     # Setter methods
     def set_title(self, new_title: str) -> None:

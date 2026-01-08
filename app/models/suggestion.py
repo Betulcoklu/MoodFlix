@@ -7,11 +7,25 @@ class Suggestion(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    mood_category_id = db.Column(db.Integer, db.ForeignKey('mood_categories.id'), nullable=True)
+    
     title = db.Column(db.String(255), nullable=False)
     year = db.Column(db.Integer, nullable=True)
-    status = db.Column(db.String(50), nullable=False, default="pending")
-    createdAt = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    reviewedAt = db.Column(db.DateTime, nullable=True)
+    
+    # NEW FIELDS ADDED:
+    description = db.Column(db.Text, nullable=True)
+    posterUrl = db.Column(db.String(500), nullable=True)
+    imdbRating = db.Column(db.Float, nullable=True)
+    
+    status = db.Column(db.String(50), default="pending")  # pending, approved, rejected
+    createdAt = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+
+    mood_category = db.relationship('MoodCategory', backref='suggestions')
+
+    def __repr__(self):
+        return f"<Suggestion {self.title} - {self.status}>"
 
     def __repr__(self):
         return f"<Suggestion {self.id}: {self.title}>"
