@@ -20,13 +20,17 @@ class AdminService:
         if not movieData.get("title"):
             raise ValueError("Title is required")
 
+        # Normalize incoming checkbox/string to a real bool for the DB column
+        raw_active = movieData.get("is_active", True)
+        is_active = raw_active if isinstance(raw_active, bool) else str(raw_active).lower() == "true"
+
         movie = Movie(
             title=movieData.get("title"),
             year=movieData.get("year"),
             description=movieData.get("description"),
             posterUrl=movieData.get("posterUrl"),
             imdbRating=movieData.get("imdbRating"),
-            is_active=movieData.get("is_active", True),
+            is_active=is_active,
         )
 
         category_ids = movieData.get("mood_category_ids") or []

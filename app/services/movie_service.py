@@ -3,6 +3,7 @@ from sqlalchemy import func
 from app.models.movie import Movie
 from app.models.mood_category import MoodCategory
 from app.models.rating import Rating
+from app.models.favorite import Favorite
 from app import db
 from sqlalchemy import desc
 
@@ -83,6 +84,16 @@ class MovieService:
     def get_average_rating(movie_id: int) -> float | None:
         avg = db.session.query(func.avg(Rating.value)).filter(Rating.movie_id == movie_id).scalar()
         return float(avg) if avg is not None else None
+
+    @staticmethod
+    def get_favorite_count(movie_id: int) -> int:
+        """Return how many distinct users favorited the movie."""
+        count = (
+            db.session.query(func.count(func.distinct(Favorite.user_id)))
+            .filter(Favorite.movie_id == movie_id)
+            .scalar()
+        )
+        return int(count or 0)
 
     @staticmethod
     def get_movies_for_homepage(limit: int = 10) -> list[Movie]:

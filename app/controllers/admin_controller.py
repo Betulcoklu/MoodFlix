@@ -48,7 +48,8 @@ def add_movie():
         "description": request.form.get("description"),
         "posterUrl": request.form.get("posterUrl"),
         "imdbRating": request.form.get("imdbRating"),
-        "is_active": request.form.get("is_active", "true"),
+        # Checkbox arrives as string; normalize to bool
+        "is_active": request.form.get("is_active", "true").lower() == "true",
         "mood_category_ids": request.form.getlist("mood_category_ids"),
     }
 
