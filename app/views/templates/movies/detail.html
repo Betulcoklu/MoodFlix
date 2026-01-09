@@ -31,7 +31,7 @@
                         
                         <div class="text-center">
                             <h3 class="text-warning mb-0"><i class="fas fa-star"></i> {{ movie.imdbRating or 'N/A' }}</h3>
-                            <small class="text-muted">IMDb</small>
+                            <small class="text-light">IMDB</small>
                         </div>
                     </div>
 
@@ -118,10 +118,10 @@
                     <div class="card mb-3 border-0 shadow-sm" id="comment{{ comment.id}}">
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
-                                <h6 class="card-subtitle mb-2 text-muted fw-bold">
+                                <h6 class="card-subtitle mb-2 text-light fw-bold">
                                     {{ comment.user.username }}
                                 </h6>
-                                <small class="text-muted">{{ comment.createdAt.strftime('%Y-%m-%d') }}</small>
+                                <small class="text-light">{{ comment.createdAt.strftime('%Y-%m-%d') }}</small>
                             </div>
                             <p class="card-text">{{ comment.text }}</p>
 
