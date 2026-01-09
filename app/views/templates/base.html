@@ -26,47 +26,49 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('home.index') }}"> Home </a>
+                <a class="nav-link" href="{{ url_for('home.index') }}"> {{ 'Home' | translate }} </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('movie.list_movies') }}"> Movies </a>
+                <a class="nav-link" href="{{ url_for('movie.list_movies') }}"> {{ 'Movies' | translate }} </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('movie.list_categories') }}"> Categories </a>
+                <a class="nav-link" href="{{ url_for('movie.list_categories') }}"> {{ 'Categories' | translate }} </a>
             </li>
         </ul>
 
         <form class="d-flex mx-auto" method="GET" action="{{ url_for('home.search_movies') }}">
-            <input class="form-control me-2" type="search" name="q" placeholder="Search movies..." value="{{ request.args.get('q', '') }}">
-            <button class="btn btn-outline-warning" type="submit">Search</button>
+            <input class="form-control me-2" type="search" name="q" placeholder="{{ 'Search movies...' | translate }}" value="{{ request.args.get('q', '') }}">
+            <button class="btn btn-outline-warning" type="submit">{{ 'Search' | translate }}</button>
         </form>
 
         <ul class="navbar-nav ms-auto align-items-center">
+            
+
             {% if current_user.is_authenticated %}
                 
                 {% if current_user.role == 'admin' %}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-warning" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user-shield"></i> Admin Panel
+                        <i class="fas fa-user-shield"></i> {{ 'Admin Panel' | translate }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
-                        <li><a class="dropdown-item fw-bold" href="{{ url_for('admin.admin_index') }}">Dashboard</a></li>
+                        <li><a class="dropdown-item fw-bold" href="{{ url_for('admin.admin_index') }}">{{ 'Dashboard' | translate }}</a></li>
                         <li><hr class="dropdown-divider"></li>
                         
-                        <li><a class="dropdown-item" href="{{ url_for('admin.list_movies') }}">Manage Movies</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('admin.list_categories') }}">Manage Categories</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('admin.list_movies') }}">{{ 'Manage Movies' | translate }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('admin.list_categories') }}">{{ 'Manage Categories' | translate }}</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('admin.list_comments') }}">Manage Comments</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('admin.list_pending_suggestions') }}">Manage Suggestions</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('admin.list_comments') }}">{{ 'Manage Comments' | translate }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('admin.list_pending_suggestions') }}">{{ 'Manage Suggestions' | translate }}</a></li>
                     </ul>
                 </li>
                 {% endif %}
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('favorite.list_favorites') }}">Favorites</a>
+                    <a class="nav-link" href="{{ url_for('favorite.list_favorites') }}">{{ 'Favorites' | translate }}</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('suggestion.list_suggestions') }}">Suggestions</a>
+                    <a class="nav-link" href="{{ url_for('suggestion.list_suggestions') }}">{{ 'Suggestions' | translate }}</a>
                 </li>
                 
                 <li class="nav-item ms-2">
@@ -76,16 +78,16 @@
                 </li>
                 <li class="nav-item ms-2">
                     <form action="{{ url_for('auth.logout') }}" method="POST" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-danger">Logout</button>
+                        <button type="submit" class="btn btn-sm btn-danger">{{ 'Logout' | translate }}</button>
                     </form>
                 </li>
 
             {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">{{ 'Login' | translate }}</a>
                 </li>
                 <li class="nav-item ms-2">
-                    <a class="btn btn-warning" href="{{ url_for('auth.register') }}">Register</a>
+                    <a class="btn btn-warning" href="{{ url_for('auth.register') }}">{{ 'Register' | translate }}</a>
                 </li>
             {% endif %}
         </ul>
@@ -99,7 +101,7 @@
         <div class="mb-4">
           {% for category, message in messages %}
             <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-              {{ message }}
+              {{ message | translate }}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
           {% endfor %}

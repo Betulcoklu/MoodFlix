@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, session  # <--- Added request and session
+from flask import Flask, request, session
 from app.extensions import db, import_models, migrate, login_manager
 from app.config import Config
 
@@ -26,12 +26,19 @@ def create_app(config_object: str | object = "app.config.Config") -> Flask:
     # Load config
     app.config.from_object(config_object)
 
-    # Ensure instance folder exists for runtime files (uploads, SQLite DB, etc.)
+    # Ensure instance folder exists for runtime files
     os.makedirs(app.instance_path, exist_ok=True)
 
     # Initialize extensions
     init_extensions(app)
 
+    # --- DUMMY TRANSLATOR (Prevents Template Errors) ---
+    # We keep this so {{ 'Text' | translate }} doesn't crash our site.
+    # It just returns the English text immediately.
+    @app.template_filter('translate')
+    def translate_text(text):
+        return text 
+    
     # Register blueprints
     register_blueprints(app)
 

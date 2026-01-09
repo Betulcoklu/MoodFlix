@@ -48,7 +48,6 @@ def add_movie():
         "description": request.form.get("description"),
         "posterUrl": request.form.get("posterUrl"),
         "imdbRating": request.form.get("imdbRating"),
-        # Checkbox arrives as string; normalize to bool
         "is_active": request.form.get("is_active", "true").lower() == "true",
         "mood_category_ids": request.form.getlist("mood_category_ids"),
     }
@@ -63,8 +62,9 @@ def edit_movie(movie_id: int):
     if guard:
         return guard
     if request.method == "GET":
-        movie = AdminService.adminListMovies()
-        movie = next((m for m in movie if m.id == movie_id), None)
+        movie_list = AdminService.adminListMovies()
+        # Find specific movie from the list
+        movie = next((m for m in movie_list if m.id == movie_id), None)
         categories = AdminService.adminListCategories()
         return render_template("admin/edit_movie.html", movie=movie, categories=categories)
 
@@ -174,6 +174,7 @@ def list_pending_suggestions():
     suggestions = AdminService.adminListPendingSuggestions()
     return render_template("admin/suggestions.html", suggestions=suggestions)
 
+
 @admin_bp.route("/suggestions/<int:suggestion_id>/edit", methods=["GET", "POST"])
 def edit_suggestion(suggestion_id: int):
     guard = _require_admin()
@@ -181,6 +182,7 @@ def edit_suggestion(suggestion_id: int):
 
     suggestion = AdminService.adminGetSuggestion(suggestion_id)
     if not suggestion:
+        flash("Suggestion not found.", "error")
         return redirect(url_for("admin.list_pending_suggestions"))
 
     if request.method == "GET":
@@ -215,14 +217,6 @@ def edit_suggestion(suggestion_id: int):
         
     return redirect(url_for("admin.list_pending_suggestions"))
 
-@admin_bp.post("/suggestions/<int:suggestion_id>/approve")
-def approve_suggestion(suggestion_id: int):
-    guard = _require_admin()
-    if guard:
-        return guard
-    AdminService.adminApproveSuggestion(suggestion_id)
-    return redirect(url_for("admin.list_pending_suggestions"))
-
 
 @admin_bp.post("/suggestions/<int:suggestion_id>/reject")
 def reject_suggestion(suggestion_id: int):
@@ -230,6 +224,7 @@ def reject_suggestion(suggestion_id: int):
     if guard:
         return guard
     AdminService.adminRejectSuggestion(suggestion_id)
+    flash("Suggestion rejected.", "info")
     return redirect(url_for("admin.list_pending_suggestions"))
 
 

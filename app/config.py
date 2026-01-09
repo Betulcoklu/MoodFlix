@@ -1,7 +1,7 @@
 import os
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev_key'
+    SECRET_KEY = 'my-super-secret-hardcoded-key-123'
     
     # This automatically puts the DB file in your 'instance' folder
     basedir = os.path.abspath(os.path.dirname(__file__))

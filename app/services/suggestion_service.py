@@ -1,7 +1,6 @@
 """Suggestion-related business logic."""
 
 from datetime import datetime
-
 from app import db
 from app.models.suggestion import Suggestion
 from app.models.user import User
@@ -10,19 +9,52 @@ from app.models.mood_category import MoodCategory
 
 class SuggestionService:
     @staticmethod
-    def submitSuggestion(userId: int, categoryId: int, title: str, year: int | None = None) -> Suggestion:
-        user = User.query.get(userId)
+    def submitSuggestion(data: dict) -> Suggestion:
+        """
+        Creates a new suggestion with all detailed fields.
+        Expects 'data' to contain: user_id, category_id, title, year,
+        description, posterUrl, imdbRating.
+        """
+        # 1. Validate User
+        user = User.query.get(data['user_id'])
         if not user:
             raise ValueError("User not found")
 
-        category = MoodCategory.query.get(categoryId)
+        # 2. Validate Category
+        # Ensure category_id is an integer
+        try:
+            cat_id = int(data['category_id'])
+        except (ValueError, TypeError):
+            raise ValueError("Invalid Category ID")
+
+        category = MoodCategory.query.get(cat_id)
         if not category:
             raise ValueError("Mood category not found")
 
+        # 3. Safe Type Conversion for optional fields
+        year = None
+        if data.get('year'):
+            try:
+                year = int(data['year'])
+            except ValueError:
+                pass
+        
+        rating = None
+        if data.get('imdbRating'):
+            try:
+                rating = float(data['imdbRating'])
+            except ValueError:
+                pass
+
+        # 4. Create Suggestion
         suggestion = Suggestion(
-            user_id=userId,
-            title=title,
+            user_id=user.id,
+            mood_category_id=category.id,  # Important: Actually link the category!
+            title=data['title'],
             year=year,
+            description=data.get('description'),
+            posterUrl=data.get('posterUrl'),
+            imdbRating=rating,
             status="pending"
         )
 
@@ -45,7 +77,8 @@ class SuggestionService:
             raise ValueError("Suggestion not found")
 
         suggestion.status = "approved"
-        suggestion.reviewedAt = datetime.utcnow()
+        # Only update reviewedAt if it exists in your model (optional)
+        # suggestion.reviewedAt = datetime.utcnow() 
         db.session.commit()
         return suggestion
 
@@ -56,7 +89,8 @@ class SuggestionService:
             raise ValueError("Suggestion not found")
 
         suggestion.status = "rejected"
-        suggestion.reviewedAt = datetime.utcnow()
+        # Only update reviewedAt if it exists in your model (optional)
+        # suggestion.reviewedAt = datetime.utcnow()
         db.session.commit()
         return suggestion
 

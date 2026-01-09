@@ -27,19 +27,24 @@ def submit_suggestion_route():
         categories = MovieService.listCategories()
         return render_template("suggestions/add.html", categories=categories)
 
-    category_id = request.form.get("category_id")
-    title = request.form.get("title")
-    year = request.form.get("year") or None
+    # 1. Gather ALL data from the form (This was missing before!)
+    data = {
+        "user_id": current_user.id,
+        "category_id": request.form.get("category_id"),
+        "title": request.form.get("title"),
+        "year": request.form.get("year"),
+        "description": request.form.get("description"),  # Added
+        "posterUrl": request.form.get("posterUrl"),      # Added
+        "imdbRating": request.form.get("imdbRating"),    # Added
+    }
 
-    try:
-        category_id_int = int(category_id) if category_id else None
-    except ValueError:
-        category_id_int = None
-
-    if not title or not category_id_int:
+    # 2. Basic Validation
+    if not data["title"] or not data["category_id"]:
         flash("Title and category are required.", "error")
         return redirect(url_for("suggestion.submit_suggestion_route"))
 
-    SuggestionService.submitSuggestion(current_user.id, category_id_int, title, int(year) if year else None)
-    flash("Suggestion submitted.", "success")
+    # 3. Send the dictionary to the Service
+    SuggestionService.submitSuggestion(data)
+    
+    flash("Suggestion submitted successfully!", "success")
     return redirect(url_for("suggestion.list_suggestions"))
